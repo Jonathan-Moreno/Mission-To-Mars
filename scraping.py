@@ -17,6 +17,7 @@ def scrape_all():
       "news_paragraph": news_paragraph,
       "featured_image": featured_image(browser),
       "facts": mars_facts(),
+      "hemispheres": hemispheres(browser),
       "last_modified": dt.datetime.now()
     }
     
@@ -93,6 +94,36 @@ def mars_facts():
     df.set_index('description', inplace=True)
 
     return df.to_html()
+
+#Challenge
+### Hemispheres
+def hemispheres(browser):
+    url = 'https://marshemispheres.com/'
+    browser.visit(url)
+    
+    hemisphere_image_urls = []
+    links = browser.find_by_css('a.product-item h3')
+   
+    for index in range(4):
+        hemispheres = {}
+        
+        # Find elements on each loop to avoid state element exception
+        browser.find_by_css('a.product-item h3')[index].click()
+
+        # Next find sample images anchor tag and extract href
+        sample_element = browser.find_by_text("Sample").first
+        
+        hemispheres["img_url"] = sample_element["href"]
+        
+        # Get Hemisphere title
+        hemispheres["title"] = browser.find_by_css("h2.title").text
+        
+        hemisphere_image_urls.append(hemispheres)
+        
+        # Finally navigate backwards to repeat process on all images
+        browser.back()
+
+        return hemisphere_image_urls
 
 if __name__ == "__main__":
     
